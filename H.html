@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        html, body { 
+          width:100%;
+            min-height: 100vw; 
+            height: 53vh;
+            margin: 0; 
+            background: #0d1117; 
+            color: white; 
+            font-family: sans-serif; 
+        }
+        
+        .nav { 
+            background: #161b22; 
+            padding: 1.2vw 3vw; 
+            text-align: center; 
+            font-size: 2vw; 
+            font-weight: bold; 
+            color: #58a6ff; 
+            flex-shrink: 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .dots {
+            position: absolute;
+            display: flex;
+            gap: 5px;
+            padding:0.2vw 1vw;
+        }
+        
+        .dot {
+            width: 2vw;
+            height: 2vw;
+            border-radius: 50%;
+        }
+        
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+                
+        .main { flex: 1; display: flex; padding: 2vw; gap: 3vw; overflow: hidden; }
+        
+        .box-view { flex: 5; }
+        .box-edit { 
+          flex: 6; 
+          width:100%; height:85vw;
+          border-left: 0.5vw solid #161b22; 
+        }
+
+        .box {  display: flex; flex-direction: column; background: #0d1117; overflow: hidden; }
+        .label { background: #333; padding: 1vw; font-size: 1.5vw; text-align: center; color: #8b949e; border-radius:2vw 2vw 0 0 }
+        
+        #edit { flex: 1; padding: 2vw; font-family: 'Consolas', monospace; font-size: 1vw; white-space: pre-wrap; overflow-y: auto; line-height: 1.4; outline: none; position: relative; }
+        #view { flex: 1; background: #0d1117; border: none; }
+        
+        .t { color: #7ee787; } 
+        .a { color: #79c0ff; } 
+        .v { color: #a5d6ff; } 
+        .s { color: #ff7b72; } 
+
+        .bot { 
+            padding: 2vw 2vw; 
+            background: #161b22; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
+
+        .toolbar-bottom { display: flex; gap: 4vw; align-items: center; padding:0 2vw; }
+        .tool-item { font-size: 2.5vw; color: #adbac7; cursor: pointer; user-select: none; transition: 0.2s;}
+        .tool-item:hover { color: #58a6ff; }
+        .tool-text { font-size: 3vw; font-weight: bold; }
+        
+        .save-wrapper { position: relative; }
+        .yellow-dot { position: absolute; top: -0.2; right: -0.4; width: 0.8vw; height: 0.9vw; background: #f1e05a; border-radius: 50%; }
+
+        button { background: #238636; color: white; border: none; padding: 1vw 3vw; border-radius: 2vw; font-weight: bold; cursor: pointer; font-size: 2vw; }
+        button:disabled { background: #333; color: #bbb; }
+
+        /* KUSTOM MODAL PENCARIAN */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 10px;
+            width: 50%;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .modal-box p { margin: 0 0 12px 0; font-size: 10px; color: #c9d1d9; }
+        .modal-box input {
+            width: 100%;
+            padding: 1.3vw 2vw;
+            background: #0d1117;
+            border: 0.5vw solid #30363d;
+            border-radius: 2vw;
+            color: white;
+            font-size: 3vw;
+            box-sizing: border-box;
+            outline: none;
+            margin-bottom: 3vw;
+        }
+        .modal-box input:focus { border-color: #58a6ff; }
+        .modal-btn-group { display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-btn {
+            padding: 1vw 2vw;
+            border-radius: 6px;
+            font-size: 2.5vw;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-cancel { background: #21262d; color: #c9d1d9; border: 0.5vw solid #30363d; }
+        .btn-search { background: #0051a6; color: white; }
+    </style>
+</head>
+<body>
+<div class="nav">
+
+<div class="nav-title" style="position: relative; display: flex; align-items: center; width: 100%; justify-content: space-between;">
+   <i class='fas fa-code' style='font-size:3vw;color:;'></i>
+    <div style="display: flex; align-items: center; gap: 4vw; margin-left: 20px;">
+        <span>TM CODE</span>
+
+        <div style="position: relative; display: flex; align-items: center;">
+            <i class="fas fa-search" style="position: absolute; left: 3vw; color: #a8a7a7; font-size: 2.5; cursor: pointer;" onclick="jalankanPencarian()"></i>
+            <input type="text" id="browserSearchInput" placeholder="Cari..." onkeyup="cekEnterPencarian(event)" style="padding: 3px 8px 3px 7vw; border: 0.4vw solid #30363d; border-radius: 5vw; background: #161b22; color: #adbac7; font-size: 2.5vw; outline: none;width:90%;">
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 15px; margin-left: auto;">
+        <i class="fas fa-file" id="btnOpenFile" style="cursor: pointer; color: #adbac7;" onclick="pilihFileHp('buka')"></i>
+        <i class="fas fa-plus" id="btnAppendFile" style="cursor: pointer; color: #a8a7a7;" onclick="pilihFileHp('tambah')"></i>
+        <i class="fas fa-trash-alt" id="btnResetFile" style="cursor: pointer; color: #a8a7a7;" onclick="bukaModalReset()"></i>
+    </div>
+    
+    <div id="resetModal" style="display: none; position: absolute; top: 100%; right: 0; background: #161b22; border: 0.5vw solid #30363d; border-radius: 2vw; padding: 2vw; width: 150px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 1000; text-align: left; margin-top: 1vw; flex-direction: column;">
+        <p style="font-size: 3vw; font-weight: bold; color: #ff5f56; margin: 0 0 2vw 0;">DELETE?</p>
+        <div style="display: flex; gap: 3vw; justify-content: flex-start;">
+            <button class="modal-btn btn-cancel" style="font-size: 2.5vw; padding: 1vw 2vw;" onclick="tutupModalReset()">NO</button>
+            <button class="modal-btn" style="background: #0046cc; color: white; font-size: 2.5vw; border: none; border-radius: 1vw; font-weight: bold; cursor: pointer; padding: 1vw 2vw;" onclick="eksekusiReset()">YES</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Fungsi bawaan browser untuk mencari teks (window.find)
+function jalankanPencarian() {
+    var kataKunci = document.getElementById('browserSearchInput').value;
+    if (kataKunci.trim() !== "") {
+        // window.find(teks, caseSensitive, backward, wrapAround)
+        var ditemukan = window.find(kataKunci, false, false, true);
+        if (!ditemukan) {
+            alert("Teks tidak ditemukan!");
+        }
+    }
+}
+
+// Fungsi untuk menjalankan pencarian saat menekan tombol Enter
+function cekEnterPencarian(event) {
+    if (event.key === "Enter") {
+        jalankanPencarian();
+    }
+}
+</script>
+        </div>
+        <input type="file" id="fileInput" accept=".html,.css,.js,.txt" style="display: none;" onchange="bacaFileHp(event)">
+    </div>
+    <div class="main">
+<div class="box box-view" style="border: solid 1vw #333; border-radius: 8vw; position: relative; display: flex; flex-direction: column; background: #0d1117; overflow: hidden; padding-bottom: 7vw; width:100%; height:80vw;">
+            
+            <div class="label" style="position: relative; padding-bottom: 2.5vw; flex-shrink: 0;font-weight:bold;border:none; background:#111;">
+                <i class='fab fa-apple' style='font-size:2.5vw;color:;'></i> iPhone
+                <div style="position: absolute; bottom: 0.5vw; left: 50%; transform: translateX(-50%); width: 12%; height: 1vw; background-color: #333; border-radius: 1vw;"></div>
+            </div>
+
+            <iframe id="view" style="flex: 1; border: none; width: 100%;"></iframe>
+
+            <div style="position: absolute; bottom: 1vw; left: 50%; transform: translateX(-50%); width: 5vw; height: 5vw; border: 0.4vw solid #333; border-radius: 50%; background: transparent; cursor: pointer; z-index: 10;"></div>
+            
+        </div>
+        <div class="box box-edit">
+            <div class="label">        <div class="dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+        </div>CODE</div>
+            <div id="edit" contenteditable="true" spellcheck="false"></div>
+        </div>
+    </div>
+
+<div class="bot">
+        <div class="toolbar-bottom">
+            <div class="tool-item tool-text">CTRL</div>
+            <div class="tool-item"><i class="fas fa-indent"></i></div>
+            <div class="tool-item tool-text">SHFT</div>
+            <div class="tool-item" onclick="document.execCommand('undo')"><i class="fas fa-undo"></i></div>
+            <div class="tool-item" onclick="document.execCommand('redo')"><i class="fas fa-redo"></i></div>
+            <div class="tool-item" onclick="bukaModalPencarian()"><i class="fas fa-search"></i></div>
+            <div class="tool-item save-wrapper"><i class="fas fa-save"></i><span class="yellow-dot"></span></div>
+            <div class="tool-item tool-text">ESC</div>
+            <div class="tool-item run-btn" id="go"><i class="fas fa-play"></i></div>
+            <div class="tool-item" onclick="bersihkanEditor()" title="Clear Editor"><i class="fas fa-broom"></i></div>
+        </div>
+        <div class="modal-overlay" id="clearModal">
+        <div class="modal-box">
+            <p style="font-size: 3vw; font-weight: bold; color: #ff5f56; margin-bottom: 3vw;">BERSIHKAN</p>
+            <p>Apakah Anda yakin ingin mengosongkan editor?</p>
+            <div class="modal-btn-group">
+                <button class="modal-btn btn-cancel" onclick="tutupModalClear()">TIDAK</button>
+                <button class="modal-btn" style="background: #ff5f56; color: white;" onclick="eksekusiClear()">YA</button>
+            </div>
+        </div>
+    </div>
+        <div style="display: flex; gap: 2vw; align-items: center; margin-right: 2vw;">
+            <div class="tool-item"><i class="fab fa-youtube" style="color: #ff0000;"></i></div>
+            <div class="tool-item"><i class="fab fa-twitter" style="color: #6cc7ff;"></i></div>
+            <div class="tool-item"><i class="fab fa-whatsapp" style="color: #25d366;"></i></div>
+            <div class="tool-item"><i class="fab fa-instagram" style="color: #e1306c;"></i></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="searchModal">
+        <div class="modal-box">
+            <p>Masukkan kode atau teks yang dicari:</p>
+            <input type="text" id="searchInput" placeholder="Cari teks...">
+            <div class="modal-btn-group">
+                <button class="modal-btn btn-cancel" onclick="tutupModalPencarian()">BATAL</button>
+                <button class="modal-btn btn-search" onclick="prosesPencarian()">CARI</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const e = document.getElementById('edit');
+        const v = document.getElementById('view');
+        const b = document.getElementById('go');
+        const modal = document.getElementById('searchModal');
+        const inputCari = document.getElementById('searchInput');
+
+        const code = `<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CODE-TM</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+
+<body style="
+background:#bbb;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+margin:0;
+padding:8px;
+font-family:Arial,sans-serif;
+">
+
+<div style="
+background:white;
+padding:20px 30px;
+border-radius:10vw;
+border:1vw solid #58a6ff;
+text-align:center;
+display:flex;
+flex-direction:column;
+align-items:center;
+">
+
+<div style="
+color:#58a6ff;
+font-size:3vw;
+margin-bottom:0.5vw;
+">
+<strong>TOMMY WEBSITE</strong>
+</div>
+
+<p style="
+font-size:2vw;
+margin-top:0;
+margin-bottom:2vw;
+color:#333;
+">
+Selamat Datang di website kami selamat mencoba
+</p>
+
+<i class="fab fa-linux" style="
+font-size:20vw;
+color:#333;
+margin-top:1vw;
+"></i>
+
+</div>
+
+</body>
+</html>`;
+
+        let i = 0;
+
+        function colorize(txt) {
+            let temp = txt.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return temp.replace(/(&lt;style&gt;[\s\S]*?&lt;\/style&gt;)|(&lt;[!\/]?[a-z0-9]+|&gt;)|(\s[a-z-]+(?==))|("(.*?)")/gi, (match, style, tag, attr, val) => {
+                if (style) return `<span class="s">${style}</span>`; 
+                if (tag) return `<span class="t">${tag}</span>`;    
+                if (attr) return `<span class="a">${attr}</span>`; 
+                if (val) return `<span class="v">${val}</span>`;    
+                return match;
+            });
+        }
+
+        const tombolSimpan = document.querySelector('.save-wrapper');
+
+        if (tombolSimpan) {
+            tombolSimpan.style.cursor = 'pointer';
+            
+            tombolSimpan.onclick = () => {
+
+                const teksEditor = e.innerText;
+                
+                if (!teksEditor.trim()) {
+                    alert("Editor kosong, tidak ada kode yang bisa disimpan.");
+                    return;
+                }
+
+                const blob = new Blob([teksEditor], { type: 'text/html' });
+                const urlUnduh = URL.createObjectURL(blob);
+                
+                const linkSementara = document.createElement('a');
+                linkSementara.href = urlUnduh;
+                linkSementara.download = 'tm_code_output.html'; 
+                
+                document.body.appendChild(linkSementara);
+                linkSementara.click();
+                
+                document.body.removeChild(linkSementara);
+                URL.revokeObjectURL(urlUnduh);
+                
+                const titikKuning = tombolSimpan.querySelector('.yellow-dot');
+                if (titikKuning) {
+                    titikKuning.style.display = 'none';
+                }
+            };
+        }
+
+        const inputLama = e.oninput;
+        e.oninput = () => {
+            if (inputLama) inputLama();
+            const titikKuning = document.querySelector('.yellow-dot');
+            if (titikKuning) {
+                titikKuning.style.display = 'block';
+            }
+        };
+
+const modalClear = document.getElementById('clearModal');
+
+        // Fungsi saat tombol sapu diklik (membuka modal)
+        function bersihkanEditor() {
+            modalClear.style.display = 'flex';
+        }
+
+        // Fungsi jika memilih TIDAK
+        function tutupModalClear() {
+            modalClear.style.display = 'none';
+        }
+
+        // Fungsi jika memilih YA
+        function eksekusiClear() {
+            e.innerText = "";
+            e.innerHTML = "";
+            update("");
+            
+            const titikKuning = document.querySelector('.yellow-dot');
+            if (titikKuning) {
+                titikKuning.style.display = 'block';
+            }
+            tutupModalClear();
+        }
+
+        function update(c) {
+            const d = v.contentDocument || v.contentWindow.document;
+            d.open(); d.write(c); d.close();
+        }
+
+        e.oninput = () => { update(e.innerText); };
+        
+        let kodeAwalEditor = ""; 
+
+        function play() {
+            if (i <= code.length) {
+                const s = code.substring(0, i);
+                
+                e.innerHTML = colorize(kodeAwalEditor + s) + "<span style='color:white'>|</span>";
+                
+                if (i % 8 === 0) update(kodeAwalEditor + s);
+                i++;
+                e.scrollTop = e.scrollHeight;
+                setTimeout(play, 15);
+            } else {
+                b.disabled = false; 
+                b.textContent = "PLAY"; 
+                e.innerHTML = colorize(kodeAwalEditor + code);
+            }
+        }
+
+        b.onclick = () => {
+            b.disabled = true;
+            b.textContent = "WRITING...";
+            kodeAwalEditor = e.innerText; 
+            if (kodeAwalEditor.trim() !== "") {
+                kodeAwalEditor += "\n\n"; 
+            }
+            
+            i = 0;
+            play();
+        };
+
+        function bukaModalPencarian() {
+            modal.style.display = 'flex';
+            inputCari.value = '';
+            inputCari.focus();
+        }
+
+        function tutupModalPencarian() {
+            modal.style.display = 'none';
+        }
+
+        inputCari.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                prosesPencarian();
+            }
+        });
+
+        let modeFile = 'buka'; 
+
+        function pilihFileHp(mode) {
+            modeFile = mode; 
+            document.getElementById('fileInput').click();
+        }
+
+        function bacaFileHp(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const isiTeksBaru = e.target.result;
+                const editor = document.getElementById('edit');
+                
+                let teksAkhir = "";
+
+                if (modeFile === 'tambah') {
+
+                    teksAkhir = editor.innerText + "\n" + isiTeksBaru;
+                } else {
+
+                    teksAkhir = isiTeksBaru;
+                }
+                
+                editor.innerText = teksAkhir;
+                editor.innerHTML = colorize(teksAkhir);
+                
+                update(teksAkhir);
+                
+                const titikKuning = document.querySelector('.yellow-dot');
+                if (titikKuning) {
+                    titikKuning.style.display = 'block';
+                }
+                
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+    const modalReset = document.getElementById('resetModal');
+    
+            function bukaModalReset() {
+                modalReset.style.display = 'flex';
+            }
+    
+            function tutupModalReset() {
+                modalReset.style.display = 'none';
+            }
+    
+            function eksekusiReset() {
+                const editor = document.getElementById('edit');
+                
+                editor.innerText = "";
+                editor.innerHTML = "";
+                update("");
+                
+                const titikKuning = document.querySelector('.yellow-dot');
+                if (titikKuning) {
+                    titikKuning.style.display = 'block';
+                }
+                
+                tutupModalReset();
+            }
+        
+          function prosesPencarian() {
+            const kataKunci = inputCari.value;
+            tutupModalPencarian();
+
+            if (!kataKunci) return;
+
+            const teksEditor = e.innerText;
+            
+            const indeks = teksEditor.indexOf(kataKunci);
+
+            if (indeks !== -1) {
+                window.getSelection().removeAllRanges();
+                
+                const walker = document.createTreeWalker(e, NodeFilter.SHOW_TEXT, null, false);
+                let nodeTeks;
+                let karakterTerlewati = 0;
+                let range = document.createRange();
+                let ditemukanAwal = false;
+
+                while (nodeTeks = walker.nextNode()) {
+                    const panjangNode = nodeTeks.nodeValue.length;
+                    
+                    if (!ditemukanAwal && karakterTerlewati + panjangNode > indeks) {
+                        range.setStart(nodeTeks, indeks - karakterTerlewati);
+                        ditemukanAwal = true;
+                    }
+                    
+                    if (ditemukanAwal && karakterTerlewati + panjangNode >= indeks + kataKunci.length) {
+                        range.setEnd(nodeTeks, (indeks + kataKunci.length) - karakterTerlewati);
+                        break;
+                    }
+                    
+                    karakterTerlewati += panjangNode;
+                }
+
+                window.getSelection().addRange(range);
+
+                const penandaPosisi = document.createElement("span");
+                range.insertNode(penandaPosisi);
+                penandaPosisi.scrollIntoView({ behavior: "smooth", block: "center" });
+                penandaPosisi.remove();
+
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+            } else {
+                alert("Teks '" + kataKunci + "' tidak ditemukan di area editor.");
+            }
+        }
+    </script>
+</body>
+</html>
