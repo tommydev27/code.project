@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         html, body { 
@@ -57,7 +58,25 @@
         .box {  display: flex; flex-direction: column; background: #0d1117; overflow: hidden; }
         .label { background: #333; padding: 1vw; font-size: 1.5vw; text-align: center; color: #8b949e; border-radius:2vw 2vw 0 0 }
         
-        #edit { flex: 1; padding: 2vw; font-family: 'Consolas', monospace; font-size: 1vw; white-space: pre-wrap; overflow-y: auto; line-height: 1.4; outline: none; position: relative; }
+      #edit {
+          flex: 1;
+          padding: 2vw;
+          font-family: 'Consolas', monospace;
+          font-size: 1vw;
+          white-space: pre-wrap;
+          overflow-y: auto;
+          line-height: 1.4;
+          outline: none;
+          position: relative;
+          -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+          touch-action: manipulation;
+      }
+      
+      #edit:focus {
+          transform: none !important;
+          zoom: 1;
+      }
         #view { flex: 1; background: #0d1117; border: none; }
         
         .t { color: #7ee787; } 
@@ -74,9 +93,9 @@
         }
 
         .toolbar-bottom { display: flex; gap: 4vw; align-items: center; padding:0 2vw; }
-        .tool-item { font-size: 2.5vw; color: #adbac7; cursor: pointer; user-select: none; transition: 0.2s;}
+        .tool-item { font-size: 2vw; color: #adbac7; cursor: pointer; user-select: none; transition: 0.2s;}
         .tool-item:hover { color: #58a6ff; }
-        .tool-text { font-size: 3vw; font-weight: bold; }
+        .tool-text { font-size: 2vw; font-weight: bold; }
         
         .save-wrapper { position: relative; }
         .yellow-dot { position: absolute; top: -0.2; right: -0.4; width: 0.8vw; height: 0.9vw; background: #f1e05a; border-radius: 50%; }
@@ -111,7 +130,7 @@
             border: 0.5vw solid #30363d;
             border-radius: 2vw;
             color: white;
-            font-size: 3vw;
+            font-size: 2vw;
             box-sizing: border-box;
             outline: none;
             margin-bottom: 3vw;
@@ -121,7 +140,7 @@
         .modal-btn {
             padding: 1vw 2vw;
             border-radius: 6px;
-            font-size: 2.5vw;
+            font-size: 2vw;
             font-weight: bold;
             cursor: pointer;
             border: none;
@@ -134,9 +153,9 @@
 <div class="nav">
 
 <div class="nav-title" style="position: relative; display: flex; align-items: center; width: 100%; justify-content: space-between;">
-   <i class='fas fa-code' style='font-size:3vw;color:;'></i>
+   <i class='fas fa-code' style='font-size:2vw;color:;'></i>
     <div style="display: flex; align-items: center; gap: 4vw; margin-left: 20px;">
-        <span>TM CODE</span>
+        <span>TOMMY ID</span>
 
         <div style="position: relative; display: flex; align-items: center;">
             <i class="fas fa-search" style="position: absolute; left: 3vw; color: #a8a7a7; font-size: 2.5; cursor: pointer;" onclick="jalankanPencarian()"></i>
@@ -160,11 +179,11 @@
 </div>
 
 <script>
-// Fungsi bawaan browser untuk mencari teks (window.find)
+  
 function jalankanPencarian() {
     var kataKunci = document.getElementById('browserSearchInput').value;
     if (kataKunci.trim() !== "") {
-        // window.find(teks, caseSensitive, backward, wrapAround)
+
         var ditemukan = window.find(kataKunci, false, false, true);
         if (!ditemukan) {
             alert("Teks tidak ditemukan!");
@@ -172,7 +191,6 @@ function jalankanPencarian() {
     }
 }
 
-// Fungsi untuk menjalankan pencarian saat menekan tombol Enter
 function cekEnterPencarian(event) {
     if (event.key === "Enter") {
         jalankanPencarian();
@@ -181,13 +199,14 @@ function cekEnterPencarian(event) {
 </script>
         </div>
         <input type="file" id="fileInput" accept=".html,.css,.js,.txt" style="display: none;" onchange="bacaFileHp(event)">
-    </div>
-    <div class="main">
-<div class="box box-view" style="border: solid 1vw #333; border-radius: 8vw; position: relative; display: flex; flex-direction: column; background: #0d1117; overflow: hidden; padding-bottom: 7vw; width:100%; height:80vw;">
+      </div>
+    
+        <div class="main">
+          <div class="box box-view" style="border: solid 1vw #333; border-radius: 8vw; position: relative; display: flex; flex-direction: column; background: #0d1117; overflow: hidden; padding-bottom: 7vw; width:100%; height:80vw;">
             
             <div class="label" style="position: relative; padding-bottom: 2.5vw; flex-shrink: 0;font-weight:bold;border:none; background:#111;">
-                <i class='fab fa-apple' style='font-size:2.5vw;color:;'></i> iPhone
-                <div style="position: absolute; bottom: 0.5vw; left: 50%; transform: translateX(-50%); width: 12%; height: 1vw; background-color: #333; border-radius: 1vw;"></div>
+            <i class='fab fa-apple' style='font-size:2.5vw;color:;'></i> iPhone
+              <div style="position: absolute; bottom: 0.5vw; left: 50%; transform: translateX(-50%); width: 12%; height: 1vw; background-color: #333; border-radius: 1vw;"></div>
             </div>
 
             <iframe id="view" style="flex: 1; border: none; width: 100%;"></iframe>
@@ -200,12 +219,12 @@ function cekEnterPencarian(event) {
             <span class="dot red"></span>
             <span class="dot yellow"></span>
             <span class="dot green"></span>
-        </div>CODE</div>
+            </div>CODE</div>
             <div id="edit" contenteditable="true" spellcheck="false"></div>
         </div>
     </div>
 
-<div class="bot">
+      <div class="bot">
         <div class="toolbar-bottom">
             <div class="tool-item tool-text">CTRL</div>
             <div class="tool-item"><i class="fas fa-indent"></i></div>
@@ -217,7 +236,7 @@ function cekEnterPencarian(event) {
             <div class="tool-item tool-text">ESC</div>
             <div class="tool-item run-btn" id="go"><i class="fas fa-play"></i></div>
             <div class="tool-item" onclick="bersihkanEditor()" title="Clear Editor"><i class="fas fa-broom"></i></div>
-        </div>
+            </div>
         <div class="modal-overlay" id="clearModal">
         <div class="modal-box">
             <p style="font-size: 3vw; font-weight: bold; color: #ff5f56; margin-bottom: 3vw;">BERSIHKAN</p>
@@ -254,67 +273,51 @@ function cekEnterPencarian(event) {
         const modal = document.getElementById('searchModal');
         const inputCari = document.getElementById('searchInput');
 
-        const code = `<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CODE-TM</title>
+  const code = `<body>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<div class="app-container">
+    <div class="header">TOM VPN</div>
+    <div class="ring-wrapper">
+        <div class="spinner" id="spinner"></div>
+        <div class="status-box" id="statusBox">
+            <div id="globeContainer" class="globe-container">
+                <canvas id="globeCanvas" width="135" height="135"></canvas>
+            </div>
+            <svg id="shieldLogo" class="shield-logo" viewBox="0 0 24 24">
+                <path fill="#2e7d32" d="M12 1L3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5l-9-4z"/>
+                <path fill="#ffffff" transform="scale(0.7) translate(5, 5)" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+            </svg>
+            <div id="statusText">Disconnected</div>
+            <div id="detailsText">Select a server</div>
+        </div>
+    </div>
+    
+    <div class="server-list">
+        <div class="server-item">
+            <span>🇺🇸 USA</span>
+            <button class="btn-connect" onclick="toggleServer(this, '🇺🇸', 'USA', '25ms')">Connect</button>
+        </div>
+        <div class="server-item">
+            <span>🇮🇳 India</span>
+            <button class="btn-connect" onclick="toggleServer(this, '🇮🇳', 'India', '45ms')">Connect</button>
+        </div>
+        <div class="server-item">
+            <span>🇪🇸 Spain</span>
+            <button class="btn-connect" onclick="toggleServer(this, '🇪🇸', 'Spain', '30ms')">Connect</button>
+        </div>
+        <div class="server-item">
+            <span>🇯🇵 Japan</span>
+            <button class="btn-connect" onclick="toggleServer(this, '🇯🇵', 'Japan', '60ms')">Connect</button>
+        </div>
+    </div>
 
-</head>
-
-<body style="
-background:#bbb;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
-margin:0;
-padding:8px;
-font-family:Arial,sans-serif;
-">
-
-<div style="
-background:white;
-padding:20px 30px;
-border-radius:10vw;
-border:1vw solid #58a6ff;
-text-align:center;
-display:flex;
-flex-direction:column;
-align-items:center;
-">
-
-<div style="
-color:#58a6ff;
-font-size:3vw;
-margin-bottom:0.5vw;
-">
-<strong>TOMMY WEBSITE</strong>
-</div>
-
-<p style="
-font-size:2vw;
-margin-top:0;
-margin-bottom:2vw;
-color:#333;
-">
-Selamat Datang di website kami selamat mencoba
-</p>
-
-<i class="fab fa-linux" style="
-font-size:20vw;
-color:#333;
-margin-top:1vw;
-"></i>
-
-</div>
-
-</body>
-</html>`;
+    <div class="footer-icons">
+        <i class="fab fa-facebook" onclick="window.open('https://facebook.com', '_blank')"></i>
+        <i class="fas fa-globe" onclick="alert('Browser dibuka')"></i>
+        <i class="fas fa-globe-americas" onclick="window.location.href='https://website-anda.com'"></i>
+        <i class="fas fa-share-alt" onclick="shareApp()"></i>
+    </div>
+`;
 
         let i = 0;
 
@@ -372,19 +375,16 @@ margin-top:1vw;
             }
         };
 
-const modalClear = document.getElementById('clearModal');
+      const modalClear = document.getElementById('clearModal');
 
-        // Fungsi saat tombol sapu diklik (membuka modal)
         function bersihkanEditor() {
             modalClear.style.display = 'flex';
         }
 
-        // Fungsi jika memilih TIDAK
         function tutupModalClear() {
             modalClear.style.display = 'none';
         }
 
-        // Fungsi jika memilih YA
         function eksekusiClear() {
             e.innerText = "";
             e.innerHTML = "";
@@ -406,34 +406,56 @@ const modalClear = document.getElementById('clearModal');
         
         let kodeAwalEditor = ""; 
 
-        function play() {
-            if (i <= code.length) {
-                const s = code.substring(0, i);
-                
-                e.innerHTML = colorize(kodeAwalEditor + s) + "<span style='color:white'>|</span>";
-                
-                if (i % 8 === 0) update(kodeAwalEditor + s);
-                i++;
-                e.scrollTop = e.scrollHeight;
-                setTimeout(play, 15);
-            } else {
-                b.disabled = false; 
-                b.textContent = "PLAY"; 
-                e.innerHTML = colorize(kodeAwalEditor + code);
-            }
-        }
-
-        b.onclick = () => {
-            b.disabled = true;
-            b.textContent = "WRITING...";
-            kodeAwalEditor = e.innerText; 
-            if (kodeAwalEditor.trim() !== "") {
-                kodeAwalEditor += "\n\n"; 
-            }
-            
-            i = 0;
-            play();
-        };
+          let isPlaying = false;
+          let timeoutId = null;
+          
+          function play() {
+              if (i <= code.length) {
+                  isPlaying = true;
+                  b.innerHTML = '<i class="fas fa-stop"></i>';
+                  
+                  const char = code.charAt(i);
+                  
+                  const sel = window.getSelection();
+                  if (sel.rangeCount > 0) {
+                      const range = sel.getRangeAt(0);
+                      range.deleteContents();
+                      range.insertNode(document.createTextNode(char));
+                      range.collapse(false);
+                      sel.removeAllRanges();
+                      sel.addRange(range);
+                  }
+                  
+                  if (i % 8 === 0) {
+                      update(e.innerText);
+                  }
+                  
+                  i++;
+                  timeoutId = setTimeout(play, 15);
+              } else {
+                  stop();
+              }
+          }
+          
+          function stop() {
+              clearTimeout(timeoutId);
+              isPlaying = false;
+              b.innerHTML = '<i class="fas fa-play"></i>';
+              b.disabled = false;
+              e.innerHTML = colorize(e.innerText);
+          }
+          
+          b.onclick = () => {
+              if (isPlaying) {
+                  stop();
+              } else {
+                  b.disabled = true;
+                  b.textContent = "WRITING...";
+                  e.focus();
+                  i = 0;
+                  play();
+              }
+          };
 
         function bukaModalPencarian() {
             modal.style.display = 'flex';
